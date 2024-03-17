@@ -1,6 +1,5 @@
 # Import python packages
 import streamlit as st
-from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col
 
 st.title ('Pending Smoothie Orders')
@@ -9,7 +8,9 @@ st.write ('choose the fruit as you want')
 NAME_ON_ORDER = st.text_input('Name on smoothie:')
 st.write('The name on smoothe is', NAME_ON_ORDER)
 
-session = get_active_session()
+cnx = st.connection("snowflake")
+session = cnx.session()
+
 my_dataframe = session.table("smoothies.public.orders").filter(col("ORDER_FILLED")==0).collect()
 
 if my_dataframe:
