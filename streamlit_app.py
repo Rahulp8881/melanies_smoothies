@@ -1,43 +1,24 @@
 # Import python packages
 import streamlit as st
+#from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark.functions import col
 
-st.title ('Pending Smoothie Orders')
-st.write ('choose the fruit as you want')
+st.title('custom smoothies')
+st.write('chose the fruit')
 
-NAME_ON_ORDER = st.text_input('Name on smoothie:')
-st.write('The name on smoothe is', NAME_ON_ORDER)
+NAME_ON_ORDER = st.text_input('name of smoothie')
+st.write('name of smoothe', NAME_ON_ORDER)
 
-cnx = st.connection("snowflake")
+cnx = st.connection("snoflake")
 session = cnx.session()
-
-my_dataframe = session.table("smoothies.public.orders").filter(col("ORDER_FILLED")==0).collect()
-
-if my_dataframe:
-   editable_df = st.experimental_data_editor(my_dataframe)
-   submitted = st.button('Submit')
-   if submitted:
-    
-      og_dataset = session.table("smoothies.public.orders")
-      edited_dataset = session.create_dataframe(editable_df)
-    
-      try:
-         og_dataset.merge(edited_dataset
-                     , (og_dataset['order_uid'] == edited_dataset['order_uid'])
-                     , [when_matched().update({'ORDER_FILLED': edited_dataset['ORDER_FILLED']})]
-                    )
-         st.success("someone cliked the button")
-      except:
-         st.text('something went wrong')
-   else:
-       st.success('there is no pending order right now')
-st.stop()
-#my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
+my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
 #st.dataframe(data=my_dataframe, use_container_width=True)
 ingredients_list = st.multiselect(
     'chose top 5 ingredients'
     ,my_dataframe
 )
+
+
 if ingredients_list:    
    ingredients_string = ''
    #name_on_order=''
