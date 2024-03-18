@@ -1,7 +1,4 @@
 
-channels:
-   snowflake
-dependencies:
   python=3.8.*
   snowflake-connector-python
   snowflake-snowpark-python
